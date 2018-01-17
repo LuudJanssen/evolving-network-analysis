@@ -75,8 +75,8 @@ def degree():
     output.normal('\n10 nodes with the highest out degree:')
     output.normal(out_degree_sorted.head(10))
     output.normal('\nWriting degree information to file...')
-    data.dataframe_to_csv(in_degree_sorted, pagerank_path, True)
-    output.success('Saved degree information to "' + pagerank_path + '"')
+    data.dataframe_to_csv(in_degree_sorted, degree_path, True)
+    output.success('Saved degree information to "' + degree_path + '"')
 
 
 # Calculate graph betweenness centrality
