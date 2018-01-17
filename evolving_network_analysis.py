@@ -2,12 +2,14 @@ import click
 import data
 import graph
 import output
-from analysis.density import graph_density
 from analysis.info import graph_info
+from analysis.density import graph_density
 from analysis.pagerank import graph_pagerank, sort_for_pagerank
+from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degree
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank.csv'
+degree_path = results_folder + '/degree.csv'
 
 # Add results folder
 data.make_folder(results_folder)
@@ -33,6 +35,7 @@ output.dim(graph_info(graph))
 def everything():
     density()
     pagerank()
+    degree()
 
 
 # Calculate graph density
@@ -48,22 +51,46 @@ def pagerank():
     output.normal('Calculated pagerank.')
     output.normal('Sorting pagerank values...')
     pagerank_dataframe = sort_for_pagerank(pagerank_dataframe)
-    output.normal('Writing pagerank results to file...')
-    data.dataframe_to_csv(pagerank_dataframe, pagerank_path, True)
-    output.normal('Saved pagerank to "' + pagerank_path + '"')
-    output.normal('10 nodes with the highest pagerank:')
+    output.normal('\n10 nodes with the highest pagerank:')
     output.normal(pagerank_dataframe.head(10))
+    output.normal('\nWriting pagerank results to file...')
+    data.dataframe_to_csv(pagerank_dataframe, pagerank_path, True)
+    output.success('Saved pagerank results to "' + pagerank_path + '"')
+
+
+# Calculate graph degree information
+def degree():
+    output.important('\nGathering graph degree information...')
+    degree_dataframe = graph_degree(graph)
+    output.normal('Gathered degree information.')
+    output.normal('Sorting for in degree...')
+    in_degree_sorted = sort_for_in_degree(degree_dataframe)
+    output.normal('\n10 nodes with the highest in degree:')
+    output.normal(in_degree_sorted.head(10))
+    output.normal('\nSorting for out degree...')
+    out_degree_sorted = sort_for_out_degree(degree_dataframe)
+    output.normal('\n10 nodes with the highest out degree:')
+    output.normal(out_degree_sorted.head(10))
+    output.normal('\nWriting degree information to file...')
+    data.dataframe_to_csv(in_degree_sorted, pagerank_path, True)
+    output.success('Saved degree information to "' + pagerank_path + '"')
 
 
 analysis_options = {
     'everything': everything,
+    'nothing': None,
     'density': density,
-    'pagerank':  pagerank
+    'pagerank':  pagerank,
+    'degree': degree
 }
 
 while True:
-    analysis_type = click.prompt('\nWhat would you like to analyse? (everything, nothing, density, pagerank)',
-                                 default='everything')
+    try:
+        analysis_type = click.prompt('\nWhat would you like to analyse? (' + ', '.join(analysis_options.keys()) + ')',
+                                     default='everything')
+    except click.Abort:
+        output.error('\n\nAborted, closing program...')
+        exit()
 
     if analysis_type == 'nothing':
         break
