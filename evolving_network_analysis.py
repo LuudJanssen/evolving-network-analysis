@@ -6,10 +6,12 @@ from analysis.info import graph_info
 from analysis.density import graph_density
 from analysis.pagerank import graph_pagerank, sort_for_pagerank
 from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degree
+from analysis.betweenness import graph_betweenness_centrality, sort_for_betweenness_centrality
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank.csv'
 degree_path = results_folder + '/degree.csv'
+betweenness_centrality_path = results_folder + '/betweenness-centrality.csv'
 
 # Add results folder
 data.make_folder(results_folder)
@@ -36,12 +38,13 @@ def everything():
     density()
     pagerank()
     degree()
+    betweenness_centrality()
 
 
 # Calculate graph density
 def density():
     output.important('\nCalculating graph density...')
-    output.dim('Graph density: ' + str(graph_density(graph)))
+    output.success('Graph density: ' + str(graph_density(graph)))
 
 
 # Calculate graph pagerank
@@ -76,12 +79,27 @@ def degree():
     output.success('Saved degree information to "' + pagerank_path + '"')
 
 
+# Calculate graph betweenness centrality
+def betweenness_centrality():
+    output.important('\nCalculating betweenness centrality...')
+    betweenness_centrality_dataframe = graph_betweenness_centrality(graph)
+    output.normal('Calculated betweenness centrality.')
+    output.normal('Sorting betweenness centrality values...')
+    betweenness_centrality_dataframe = sort_for_betweenness_centrality(betweenness_centrality_dataframe)
+    output.normal('\n10 nodes with the highest betweenness centrality:')
+    output.normal(betweenness_centrality_dataframe.head(10))
+    output.normal('\nWriting betweenness centrality results to file...')
+    data.dataframe_to_csv(betweenness_centrality_dataframe, betweenness_centrality_path, True)
+    output.success('Saved betweenness centrality results to "' + betweenness_centrality_path + '"')
+
+
 analysis_options = {
     'everything': everything,
     'nothing': None,
     'density': density,
     'pagerank':  pagerank,
-    'degree': degree
+    'degree': degree,
+    'betweenness-centrality': betweenness_centrality
 }
 
 while True:
