@@ -17,5 +17,3 @@ def graph_pagerank(graph):
 # Sorts all nodes on their pagerank
 def sort_for_pagerank(dataframe):
     return dataframe.sort_values([pagerank_key], ascending=False)
-
-

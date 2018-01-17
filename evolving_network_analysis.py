@@ -44,15 +44,15 @@ def density():
 # Calculate graph pagerank
 def pagerank():
     output.important('\nCalculating graph pagerank...')
-    pagerank = graph_pagerank(graph)
+    pagerank_dataframe = graph_pagerank(graph)
     output.normal('Calculated pagerank.')
     output.normal('Sorting pagerank values...')
-    pagerank = sort_for_pagerank(pagerank)
+    pagerank_dataframe = sort_for_pagerank(pagerank_dataframe)
     output.normal('Writing pagerank results to file...')
-    data.dataframe_to_csv(pagerank, pagerank_path, True)
+    data.dataframe_to_csv(pagerank_dataframe, pagerank_path, True)
     output.normal('Saved pagerank to "' + pagerank_path + '"')
     output.normal('10 nodes with the highest pagerank:')
-    output.normal(pagerank.head(10))
+    output.normal(pagerank_dataframe.head(10))
 
 
 analysis_options = {
