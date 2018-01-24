@@ -14,8 +14,8 @@ degree_path = results_folder + '/degree.csv'
 # Add results folder
 data.make_folder(results_folder)
 
-# Let the user select a data file
-filename = data.select_data_file()
+# Import the data file
+filename = '../temporal-wiki-dataset/tgraph_real_wikiedithyperlinks.txt'
 
 # If no file was selected, exit
 if filename == '':
