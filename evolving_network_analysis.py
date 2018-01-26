@@ -4,6 +4,8 @@ import graph
 import output
 from analysis.info import graph_info
 from analysis.density import graph_density
+from analysis.lcc import graph_lcc
+from analysis.diameter import graph_diameter
 from analysis.pagerank import graph_pagerank, sort_for_pagerank
 from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degree
 
@@ -28,20 +30,30 @@ graph = graph.datafile_to_graph(filename)
 
 # Output graph info
 output.success('\nSuccessfully read graph. Info:')
-output.dim(graph_info(graph))
+output.dim(str(graph.num_edges()) + "  edges")
+output.dim(str(graph.num_vertices()) + "  vertices")
 
 
 # Calculate all graph properties
 def everything():
-    density()
-    pagerank()
-    degree()
+	#need to be updated from networkx to graph tool
+    #density()
+    #pagerank()
+    #degree()
+    lcc = graph_lcc(graph)
+    output.dim('LCC:  ' + str(lcc.num_vertices()));
+	
+	
 
 
 # Calculate graph density
 def density():
     output.important('\nCalculating graph density...')
     output.dim('Graph density: ' + str(graph_density(graph)))
+	
+def diameter():
+	output.important('\nCalculating graph diameter... ')
+	output.dim('Graph diameter: ' + str(graph_diameter(lcc)))
 
 
 # Calculate graph pagerank
