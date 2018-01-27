@@ -33,24 +33,27 @@ output.success('\nSuccessfully read graph. Info:')
 output.dim(str(graph.num_edges()) + "  edges")
 output.dim(str(graph.num_vertices()) + "  vertices")
 
+#calculate LCC
+lcc = graph_lcc(graph)
+output.dim('LCC:  ' + str(lcc.num_vertices()));
+
 
 # Calculate all graph properties
 def everything():
-	#need to be updated from networkx to graph tool
-    #density()
-    #pagerank()
-    #degree()
-    lcc = graph_lcc(graph)
-    output.dim('LCC:  ' + str(lcc.num_vertices()));
+    density()
+    pagerank()
+    degree()
+    diameter()
 	
-	
+
 
 
 # Calculate graph density
 def density():
     output.important('\nCalculating graph density...')
     output.dim('Graph density: ' + str(graph_density(graph)))
-	
+
+#calculate (pseudo) diameter
 def diameter():
 	output.important('\nCalculating graph diameter... ')
 	output.dim('Graph diameter: ' + str(graph_diameter(lcc)))
