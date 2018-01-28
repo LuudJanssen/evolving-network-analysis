@@ -7,6 +7,7 @@ from analysis.lcc import graph_lcc
 from analysis.diameter import graph_diameter
 from analysis.pagerank import graph_pagerank, sort_for_pagerank
 from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degree
+from analysis.betweenness_centrality import graph_betweenness_centrality
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank.csv'
@@ -87,6 +88,13 @@ def degree():
     output.normal('\nWriting degree information to file...')
     data.dataframe_to_csv(in_degree_sorted, degree_path, True)
     output.success('Saved degree information to "' + degree_path + '"')
+
+
+def betweenness_centrality():
+    output.important('\nCalculating betweenness centrality...')
+    nodes, edges = graph_betweenness_centrality(graph)
+    print(nodes)
+    print(edges)
 
 
 analysis_options = {
