@@ -163,7 +163,7 @@ analysis_options = {
     'degree': degree,
     'betweenness-centrality': betweenness_centrality,
     'mean-shortest-path': mean_shortest_path,
-    'eigenvector': mean_shortest_path
+    'eigenvector': eigenvector
 }
 
 while True:
