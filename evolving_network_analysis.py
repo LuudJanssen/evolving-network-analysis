@@ -5,10 +5,11 @@ from graph import random_graph, datafile_to_graph
 from analysis.density import graph_density
 from analysis.lcc import graph_lcc
 from analysis.diameter import graph_diameter
-from analysis.pagerank import graph_pagerank, sort_for_pagerank
-from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degree
-from analysis.betweenness_centrality import graph_betweenness_centrality, sort_for_betweenness_centrality
+from analysis.pagerank import graph_pagerank
+from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degree, sort_for_degree_sum
+from analysis.betweenness_centrality import graph_betweenness_centrality
 from analysis.shortest_path import graph_shortest_path, shortest_paths_for_vertices, shortest_paths_mean
+from analysis.eigenvector import graph_eigenvector
 
 TEST = True
 
@@ -17,6 +18,7 @@ pagerank_path = results_folder + '/pagerank.csv'
 degree_path = results_folder + '/degree.csv'
 nodes_betweenness_path = results_folder + '/betweenness.nodes.csv'
 edges_betweenness_path = results_folder + '/betweenness.edges.csv'
+eigenvector_path = results_folder + '/eigenvector.csv'
 
 # Add results folder
 data.make_folder(results_folder)
@@ -55,6 +57,7 @@ def everything():
     diameter()
     betweenness_centrality()
     mean_shortest_path()
+    eigenvector()
 
 
 # Calculate graph density
@@ -78,9 +81,9 @@ def diameter():
 
 # Calculate graph pagerank
 def pagerank():
-    output.important('\nCalculating graph pagerank...')
+    output.important('\nCalculating graph pageranks...')
     pagerank_dataframe = graph_pagerank(graph)
-    output.normal('Calculated pagerank.')
+    output.normal('Calculated pageranks.')
     output.normal('\n10 nodes with the highest pagerank:')
     output.normal(pagerank_dataframe.head(10))
     output.normal('\nWriting pagerank results to file...')
@@ -101,21 +104,25 @@ def degree():
     out_degree_sorted = sort_for_out_degree(degree_dataframe)
     output.normal('\n10 nodes with the highest out degree:')
     output.normal(out_degree_sorted.head(10))
+    output.normal('\nSorting for degree sum...')
+    sum_degree_sorted = sort_for_degree_sum(degree_dataframe)
+    output.normal('\n10 nodes with the highest degree sum:')
+    output.normal(sum_degree_sorted.head(10))
     output.normal('\nWriting degree information to file...')
-    data.dataframe_to_csv(in_degree_sorted, degree_path, True)
+    data.dataframe_to_csv(sum_degree_sorted, degree_path, True)
     output.success('Saved degree information to "' + degree_path + '"')
 
 
 # Calculate betweenness centrality
 def betweenness_centrality():
-    output.important('\nCalculating betweenness centrality...')
+    output.important('\nCalculating betweenness centralities...')
     nodes, edges = graph_betweenness_centrality(graph)
-    output.normal('Calulated betweenness centrality for both edges and nodes.')
+    output.normal('Calulated betweenness centralities for both edges and nodes.')
     output.normal('\n10 nodes with the highest betweenness centrality:')
     output.normal(nodes.head(10))
     output.normal('\n10 edges with the highest betweenness centrality:')
     output.normal(edges.head(10))
-    output.normal('\nWriting betweenness centrality ...')
+    output.normal('\nWriting betweenness centralities to file..')
     data.dataframe_to_csv(nodes, nodes_betweenness_path, True)
     output.success('Saved nodes betweenness centrality information to "' + nodes_betweenness_path + '"')
     data.dataframe_to_csv(edges, edges_betweenness_path, True)
@@ -126,11 +133,24 @@ def betweenness_centrality():
 def mean_shortest_path():
     output.important('\nCalculating shortest paths...')
     shortest_paths = graph_shortest_path(graph)
-    output.important('Calculated shortest paths')
-    output.important('Retreiving shortest paths as arrays')
+    output.normal('Calculated shortest paths')
+    output.normal('Retreiving shortest paths as arrays')
     shortest_paths = shortest_paths_for_vertices(shortest_paths, graph.get_vertices())
-    output.important('\nCalculating shortest path mean')
-    output.important('Mean shortest path: ' + str(shortest_paths_mean(shortest_paths)))
+    output.normal('\nCalculating shortest path mean')
+    output.dim('Mean shortest path: ' + str(shortest_paths_mean(shortest_paths)))
+
+
+# Calculate graph pagerank
+def eigenvector():
+    output.important('\nCalculating graph eigenvectors...')
+    eigenvalue, eigenvector_dataframe = graph_eigenvector(graph)
+    output.normal('Calculated eigenvectors.')
+    output.dim('Largest eigenvalue: ' + str(eigenvalue))
+    output.normal('\n10 nodes with the highest eigenvector:')
+    output.normal(eigenvector_dataframe.head(10))
+    output.normal('\nWriting eigenvector results to file...')
+    data.dataframe_to_csv(eigenvector_dataframe, eigenvector_path, True)
+    output.success('Saved eigenvector results to "' + eigenvector_path + '"')
 
 
 analysis_options = {
@@ -142,7 +162,8 @@ analysis_options = {
     'pagerank': pagerank,
     'degree': degree,
     'betweenness-centrality': betweenness_centrality,
-    'mean-shortest-path': mean_shortest_path
+    'mean-shortest-path': mean_shortest_path,
+    'eigenvector': mean_shortest_path
 }
 
 while True:
