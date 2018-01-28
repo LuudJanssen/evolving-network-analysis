@@ -16,6 +16,9 @@ def graph_betweenness_centrality(graph):
     nodes_dataframe.columns = [betweenness_centrality_key]
     edges_dataframe.columns = [betweenness_centrality_key]
 
+    nodes_dataframe = sort_for_betweenness_centrality(nodes_dataframe)
+    edges_dataframe = sort_for_betweenness_centrality(edges_dataframe)
+
     return nodes_dataframe, edges_dataframe
 
 
