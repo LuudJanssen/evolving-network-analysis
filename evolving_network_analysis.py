@@ -1,13 +1,16 @@
 import click
 import data
-import graph
 import output
+from graph import random_graph, datafile_to_graph
 from analysis.density import graph_density
 from analysis.lcc import graph_lcc
 from analysis.diameter import graph_diameter
 from analysis.pagerank import graph_pagerank, sort_for_pagerank
 from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degree
 from analysis.betweenness_centrality import graph_betweenness_centrality, sort_for_betweenness_centrality
+from analysis.shortest_path import graph_shortest_path, shortest_paths_for_vertices, shortest_paths_mean
+
+TEST = True
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank.csv'
@@ -26,27 +29,32 @@ if filename == '':
     output.error('No data file selected, exiting...')
     exit()
 
-# Read the graph
-output.important('Reading graph data from "' + filename + '"...')
-# graph = graph.datafile_to_graph(filename)
-graph = graph.random_graph()
+if TEST:
+    # Create a random graph
+    output.important('Creating a random connected graph with 100 nodes')
+    graph = random_graph()
+else:
+    # Read the graph
+    output.important('Reading graph data from "' + filename + '"...')
+    graph = datafile_to_graph(filename)
+
 
 # Output graph info
 output.success('\nSuccessfully read graph. Info:')
 output.dim(str(graph.num_edges()) + "  edges")
 output.dim(str(graph.num_vertices()) + "  vertices")
 
-# calculate LCC
-lcc = graph_lcc(graph)
-output.dim('LCC:  ' + str(lcc.num_vertices()))
-
 
 # Calculate all graph properties
 def everything():
     density()
+    largest_connected_component()
+    diameter()
     pagerank()
     degree()
     diameter()
+    betweenness_centrality()
+    mean_shortest_path()
 
 
 # Calculate graph density
@@ -55,10 +63,17 @@ def density():
     output.dim('Graph density: ' + str(graph_density(graph)))
 
 
+# Calculate the largest connected component
+def largest_connected_component():
+    output.important('\nCalculating largest connected component...')
+    lcc = graph_lcc(graph)
+    output.dim('Largest connected component: ' + str(lcc.num_vertices()))
+
+
 # Calculate (pseudo) diameter
 def diameter():
     output.important('\nCalculating graph diameter...')
-    output.dim('Graph diameter: ' + str(graph_diameter(lcc)))
+    output.dim('Graph diameter: ' + str(graph_diameter(graph)))
 
 
 # Calculate graph pagerank
@@ -93,6 +108,7 @@ def degree():
     output.success('Saved degree information to "' + degree_path + '"')
 
 
+# Calculate betweenness centrality
 def betweenness_centrality():
     output.important('\nCalculating betweenness centrality...')
     nodes, edges = graph_betweenness_centrality(graph)
@@ -111,14 +127,27 @@ def betweenness_centrality():
     output.success('Saved edges betweenness centrality information to "' + edges_betweenness_path + '"')
 
 
+# Calculate mean shortest path
+def mean_shortest_path():
+    output.important('\nCalculating shortest paths...')
+    shortest_paths = graph_shortest_path(graph)
+    output.important('Calculated shortest paths')
+    output.important('Retreiving shortest paths as arrays')
+    shortest_paths = shortest_paths_for_vertices(shortest_paths, graph.get_vertices())
+    output.important('\nCalculating shortest path mean')
+    output.important('Mean shortest path: ' + str(shortest_paths_mean(shortest_paths)))
+
+
 analysis_options = {
     'everything': everything,
     'nothing': None,
     'density': density,
+    'diameter': diameter,
+    'largest-connected-component': largest_connected_component,
     'pagerank': pagerank,
     'degree': degree,
-    'diameter': diameter,
-    'betweenness-centrality': betweenness_centrality
+    'betweenness-centrality': betweenness_centrality,
+    'mean-shortest-path': mean_shortest_path
 }
 
 while True:
