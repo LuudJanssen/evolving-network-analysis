@@ -2,7 +2,6 @@ import click
 import data
 import graph
 import output
-from analysis.info import graph_info
 from analysis.density import graph_density
 from analysis.lcc import graph_lcc
 from analysis.diameter import graph_diameter
@@ -33,9 +32,9 @@ output.success('\nSuccessfully read graph. Info:')
 output.dim(str(graph.num_edges()) + "  edges")
 output.dim(str(graph.num_vertices()) + "  vertices")
 
-#calculate LCC
+# calculate LCC
 lcc = graph_lcc(graph)
-output.dim('LCC:  ' + str(lcc.num_vertices()));
+output.dim('LCC:  ' + str(lcc.num_vertices()))
 
 
 # Calculate all graph properties
@@ -44,8 +43,6 @@ def everything():
     pagerank()
     degree()
     diameter()
-	
-
 
 
 # Calculate graph density
@@ -53,10 +50,11 @@ def density():
     output.important('\nCalculating graph density...')
     output.dim('Graph density: ' + str(graph_density(graph)))
 
-#calculate (pseudo) diameter
+
+# Calculate (pseudo) diameter
 def diameter():
-	output.important('\nCalculating graph diameter... ')
-	output.dim('Graph diameter: ' + str(graph_diameter(lcc)))
+    output.important('\nCalculating graph diameter...')
+    output.dim('Graph diameter: ' + str(graph_diameter(lcc)))
 
 
 # Calculate graph pagerank
@@ -95,8 +93,9 @@ analysis_options = {
     'everything': everything,
     'nothing': None,
     'density': density,
-    'pagerank':  pagerank,
-    'degree': degree
+    'pagerank': pagerank,
+    'degree': degree,
+    'diameter': diameter
 }
 
 while True:
