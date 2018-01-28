@@ -7,11 +7,13 @@ from analysis.lcc import graph_lcc
 from analysis.diameter import graph_diameter
 from analysis.pagerank import graph_pagerank, sort_for_pagerank
 from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degree
-from analysis.betweenness_centrality import graph_betweenness_centrality
+from analysis.betweenness_centrality import graph_betweenness_centrality, sort_for_betweenness_centrality
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank.csv'
 degree_path = results_folder + '/degree.csv'
+nodes_betweenness_path = results_folder + '/betweenness.nodes.csv'
+edges_betweenness_path = results_folder + '/betweenness.edges.csv'
 
 # Add results folder
 data.make_folder(results_folder)
@@ -26,7 +28,8 @@ if filename == '':
 
 # Read the graph
 output.important('Reading graph data from "' + filename + '"...')
-graph = graph.datafile_to_graph(filename)
+# graph = graph.datafile_to_graph(filename)
+graph = graph.random_graph()
 
 # Output graph info
 output.success('\nSuccessfully read graph. Info:')
@@ -93,8 +96,19 @@ def degree():
 def betweenness_centrality():
     output.important('\nCalculating betweenness centrality...')
     nodes, edges = graph_betweenness_centrality(graph)
-    print(nodes)
-    print(edges)
+    output.normal('Calulated betweenness centrality for both edges and nodes.')
+    output.normal('Sorting both datasets for betweenness centrality...')
+    nodes = sort_for_betweenness_centrality(nodes)
+    edges = sort_for_betweenness_centrality(edges)
+    output.normal('\n10 nodes with the highest betweenness centrality:')
+    output.normal(nodes.head(10))
+    output.normal('\n10 edges with the highest betweenness centrality:')
+    output.normal(edges.head(10))
+    output.normal('\nWriting betweenness centrality ...')
+    data.dataframe_to_csv(nodes, nodes_betweenness_path, True)
+    output.success('Saved nodes betweenness centrality information to "' + nodes_betweenness_path + '"')
+    data.dataframe_to_csv(edges, edges_betweenness_path, True)
+    output.success('Saved edges betweenness centrality information to "' + edges_betweenness_path + '"')
 
 
 analysis_options = {
@@ -103,7 +117,8 @@ analysis_options = {
     'density': density,
     'pagerank': pagerank,
     'degree': degree,
-    'diameter': diameter
+    'diameter': diameter,
+    'betweenness-centrality': betweenness_centrality
 }
 
 while True:
