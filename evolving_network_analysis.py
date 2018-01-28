@@ -1,6 +1,7 @@
 import click
 import data
 import output
+import filter
 from graph import random_graph, datafile_to_graph
 from analysis.density import graph_density
 from analysis.lcc import graph_lcc
@@ -11,7 +12,7 @@ from analysis.betweenness_centrality import graph_betweenness_centrality
 from analysis.shortest_path import graph_shortest_path, shortest_paths_for_vertices, shortest_paths_mean
 from analysis.eigenvector import graph_eigenvector
 
-TEST = True
+TEST = False
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank.csv'
