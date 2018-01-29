@@ -13,6 +13,7 @@ from analysis.shortest_path import graph_shortest_path, shortest_paths_for_verti
 from analysis.eigenvector import graph_eigenvector
 
 TEST = False
+NSnapshots = 10
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank.csv'
@@ -71,7 +72,7 @@ def density():
 def largest_connected_component():
     output.important('\nCalculating largest connected component...')
     lcc = graph_lcc(graph)
-    output.dim('Largest connected component: ' + str(lcc.num_vertices()))
+    output.dim('Largest connected component: ' + str(lcc.num_vertices()) + ' vertices and ' + str(lcc.num_edges()) + ' edges.')
 
 
 # Calculate (pseudo) diameter
@@ -133,12 +134,10 @@ def betweenness_centrality():
 # Calculate mean shortest path
 def mean_shortest_path():
     output.important('\nCalculating shortest paths...')
-    shortest_paths = graph_shortest_path(graph)
+	lcc = graph_lcc(graph)
+    mean = shortest_paths_mean( lcc , graph_diameter(lcc) )
     output.normal('Calculated shortest paths')
-    output.normal('Retreiving shortest paths as arrays')
-    shortest_paths = shortest_paths_for_vertices(shortest_paths, graph.get_vertices())
-    output.normal('\nCalculating shortest path mean')
-    output.dim('Mean shortest path: ' + str(shortest_paths_mean(shortest_paths)))
+    output.normal('mean shortest path length: ' + mean)
 
 
 # Calculate graph pagerank
