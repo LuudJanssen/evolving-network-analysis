@@ -18,4 +18,4 @@ def datafile_to_graph(filename):
 
 
 def random_graph():
-    return generation.complete_graph(100)
+    return generation.complete_graph(1000)

@@ -11,11 +11,11 @@ from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degre
 from analysis.betweenness_centrality import graph_betweenness_centrality
 from analysis.shortest_path import shortest_paths_mean
 from analysis.eigenvector import graph_eigenvector
+from analysis.modularity import graph_modularity
 
-TEST = False
+TEST = True
 STATIC_ANALYSIS = True
-TEMPORAL_ANALYSIS = True
-NSnapshots = 10
+TEMPORAL_ANALYSIS = False
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank'
@@ -23,6 +23,7 @@ degree_path = results_folder + '/degree'
 nodes_betweenness_path = results_folder + '/betweenness.nodes'
 edges_betweenness_path = results_folder + '/betweenness.edges'
 eigenvector_path = results_folder + '/eigenvector'
+modularity_path = results_folder + '/modularity'
 
 # Add results folder
 data.make_folder(results_folder)
@@ -51,9 +52,7 @@ output.dim(str(graph.num_vertices()) + "  vertices")
 
 
 # Returns the filename for a CSV file with a given timestamp
-def get_timestamp_path(path, timestamp=None):
-    postfix = '.csv'
-
+def get_timestamp_path(path, timestamp=None, postfix='.csv'):
     if timestamp is None:
         return path + '.static' + postfix
     else:
@@ -81,26 +80,27 @@ def everything(timestamp=None):
     betweenness_centrality(timestamp)
     mean_shortest_path(timestamp)
     eigenvector(timestamp)
+    modularity(timestamp)
 
 
 # Calculate graph density
 def density(timestamp=None):
     output.important('\nCalculating graph density...')
-    output.dim('Graph density' + get_timestamp_sting(timestamp) + ': ' + str(graph_density(graph)))
+    output.success('Graph density' + get_timestamp_sting(timestamp) + ': ' + str(graph_density(graph)))
 
 
 # Calculate the largest connected component
 def largest_connected_component(timestamp=None):
     output.important('\nCalculating largest connected component...')
     lcc = graph_lcc(graph)
-    output.dim('Largest connected component' + get_timestamp_sting(timestamp) + ': ' + str(lcc.num_vertices()) +
-               ' vertices and ' + str(lcc.num_edges()) + ' edges.')
+    output.success('Largest connected component' + get_timestamp_sting(timestamp) + ': ' + str(lcc.num_vertices()) +
+                   ' vertices and ' + str(lcc.num_edges()) + ' edges.')
 
 
 # Calculate (pseudo) diameter
 def diameter(timestamp=None):
     output.important('\nCalculating graph diameter...')
-    output.dim('Graph diameter' + get_timestamp_sting(timestamp) + ': ' + str(graph_diameter(graph)))
+    output.success('Graph diameter' + get_timestamp_sting(timestamp) + ': ' + str(graph_diameter(graph)))
 
 
 # Calculate graph pagerank
@@ -161,20 +161,28 @@ def mean_shortest_path(timestamp=None):
     lcc = graph_lcc(graph)
     mean = shortest_paths_mean(lcc)
     output.normal('Calculated shortest paths')
-    output.normal('mean shortest path length' + get_timestamp_sting(timestamp) + ': ' + mean)
+    output.success('mean shortest path length' + get_timestamp_sting(timestamp) + ': ' + mean)
 
 
-# Calculate graph pagerank
+# Calculate graph eigenvectors
 def eigenvector(timestamp=None):
-    output.important('\nCalculating graph eigenvectors' + get_timestamp_sting(timestamp) + '...')
     eigenvalue, eigenvector_dataframe = graph_eigenvector(graph)
     output.normal('Calculated eigenvectors.')
     output.dim('Largest eigenvalue' + get_timestamp_sting(timestamp) + ': ' + str(eigenvalue))
     output.normal('\n10 nodes with the highest eigenvector' + get_timestamp_sting(timestamp) + ':')
     output.normal(eigenvector_dataframe.head(10))
-    output.normal('\nWriting eigenvector results to file...')
     data.dataframe_to_csv(eigenvector_dataframe, get_timestamp_path(eigenvector_path, timestamp), True)
     output.success('Saved eigenvector results to "' + get_timestamp_path(eigenvector_path, timestamp) + '"')
+
+
+# Calculate modularity
+def modularity(timestamp=None):
+    output.important('\nCalculating graph modularity' + get_timestamp_sting(timestamp) + '...')
+    state, modularity_float = graph_modularity(graph)
+    output.dim('Modularity' + get_timestamp_sting(timestamp) + ': ' + str(modularity_float))
+    output.normal('\nWriting community results to file...')
+    state.draw(output=get_timestamp_path(modularity_path, timestamp, '.pdf'))
+    output.success('Saved community results to "' + get_timestamp_path(modularity_path, timestamp, '.pdf') + '"')
 
 
 analysis_options = {
@@ -187,7 +195,8 @@ analysis_options = {
     'degree': degree,
     'betweenness-centrality': betweenness_centrality,
     'mean-shortest-path': mean_shortest_path,
-    'eigenvector': eigenvector
+    'eigenvector': eigenvector,
+    'modularity': modularity
 }
 
 while True:
