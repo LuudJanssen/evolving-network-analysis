@@ -134,8 +134,8 @@ def betweenness_centrality():
 # Calculate mean shortest path
 def mean_shortest_path():
     output.important('\nCalculating shortest paths...')
-	lcc = graph_lcc(graph)
-    mean = shortest_paths_mean( lcc , graph_diameter(lcc) )
+    lcc = graph_lcc(graph)
+    mean = shortest_paths_mean( lcc )
     output.normal('Calculated shortest paths')
     output.normal('mean shortest path length: ' + mean)
 
