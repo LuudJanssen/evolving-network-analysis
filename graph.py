@@ -9,6 +9,7 @@ time_end_key = 'time_end'
 def datafile_to_graph(filename):
     return graph_tool.load_graph_from_csv(filename,
                                           directed=True,
+                                          string_vals=False,
                                           eprop_types=['int', 'int'],
                                           eprop_names=[time_start_key, time_end_key],
                                           csv_options={

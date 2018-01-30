@@ -35,8 +35,8 @@ def unset(graph):
 
 
 def time_max(graph):
-    return graph.edge_properties[time_end_key].a.max()
+    return int(graph.edge_properties[time_end_key].a.max())
 
 
 def time_min(graph):
-    return graph.edge_properties[time_start_key].a.min()
+    return int(graph.edge_properties[time_start_key].a.min())
