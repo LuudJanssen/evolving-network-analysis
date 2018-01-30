@@ -14,7 +14,7 @@ from analysis.eigenvector import graph_eigenvector
 
 TEST = False
 STATIC_ANALYSIS = True
-TEMPORAL_ANALYSIS = False
+TEMPORAL_ANALYSIS = True
 NSnapshots = 10
 
 results_folder = 'results'
