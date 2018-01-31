@@ -1,5 +1,6 @@
 import numpy
 import numpy.random
+import click
 from graph_tool.topology import shortest_distance
 
 
@@ -14,12 +15,13 @@ def shortest_paths_mean(graph):
     vertices = graph.get_vertices()
     numpy.random.shuffle(vertices)
 
-    for i in range(1000):
-        v = vertices[i]
-        dist = shortest_distance(graph, source=v)
+    with click.progressbar(range(min(1000, len(vertices))), label='Calculating shortest paths for vetices') as bar:
+        for i in bar:
+            v = vertices[i]
+            dist = shortest_distance(graph, source=v)
 
-        for j in dist:
-            frequency_dict[j] += 1
+            for j in dist:
+                frequency_dict[j] += 1
 
     n_paths = 0
     total = 0
