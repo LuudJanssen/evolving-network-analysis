@@ -14,7 +14,7 @@ from analysis.eigenvector import graph_eigenvector
 from analysis.assortativity import graph_assortativity
 
 TEST = False
-STATIC_ANALYSIS = True
+STATIC_ANALYSIS = False
 TEMPORAL_ANALYSIS = True
 
 results_folder = 'results'
@@ -72,16 +72,16 @@ def get_timestamp_sting(timestamp=None):
 
 # Calculate all graph properties
 def everything(timestamp=None):
-    density(timestamp)
-    largest_connected_component(timestamp)
-    diameter(timestamp)
-    pagerank(timestamp)
-    degree(timestamp)
-    diameter(timestamp)
-    betweenness_centrality(timestamp)
+    #density(timestamp)
+    #largest_connected_component(timestamp)
+    #diameter(timestamp)
+    #pagerank(timestamp)
+    #degree(timestamp)
+    #diameter(timestamp)
     mean_shortest_path(timestamp)
-    eigenvector(timestamp)
-    assortativity(timestamp)
+    betweenness_centrality(timestamp)
+    #eigenvector(timestamp)
+    #assortativity(timestamp)
 
 
 # Calculate graph density
@@ -162,7 +162,7 @@ def mean_shortest_path(timestamp=None):
     lcc = graph_lcc(graph)
     mean = shortest_paths_mean(lcc)
     output.normal('Calculated shortest paths')
-    output.normal('mean shortest path length' + get_timestamp_sting(timestamp) + ': ' + mean)
+    output.normal('mean shortest path length' + get_timestamp_sting(timestamp) + ': ' + str(mean))
 
 
 # Calculate graph pagerank
@@ -231,7 +231,8 @@ while True:
                 output.normal('Last edge time: ' + str(time_end))
                 output.normal('Time difference: ' + str(time_diff))
 
-                snapshots = click.prompt('\nHow many snapshots should be analysed?', default=10, type=int)
+                #snapshots = click.prompt('\nHow many snapshots should be analysed?', default=10, type=int)
+                snapshots = 10
 
                 for number in range(snapshots):
                     current_time = time_start + int(round(time_diff / (snapshots - 1) * number))
