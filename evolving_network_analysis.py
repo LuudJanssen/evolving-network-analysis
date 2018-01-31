@@ -11,11 +11,11 @@ from analysis.degree import graph_degree, sort_for_in_degree, sort_for_out_degre
 from analysis.betweenness_centrality import graph_betweenness_centrality
 from analysis.shortest_path import shortest_paths_mean
 from analysis.eigenvector import graph_eigenvector
+from analysis.assortativity import graph_assortativity
 
 TEST = False
 STATIC_ANALYSIS = True
 TEMPORAL_ANALYSIS = True
-NSnapshots = 10
 
 results_folder = 'results'
 pagerank_path = results_folder + '/pagerank'
@@ -81,6 +81,7 @@ def everything(timestamp=None):
     betweenness_centrality(timestamp)
     mean_shortest_path(timestamp)
     eigenvector(timestamp)
+    assortativity(timestamp)
 
 
 # Calculate graph density
@@ -141,7 +142,7 @@ def degree(timestamp=None):
 def betweenness_centrality(timestamp=None):
     output.important('\nCalculating betweenness centralities' + get_timestamp_sting(timestamp) + '...')
     nodes, edges = graph_betweenness_centrality(graph)
-    output.normal('Calulated betweenness centralities for both edges and nodes.')
+    output.normal('Calculated betweenness centralities for both edges and nodes.')
     output.normal('\n10 nodes with the highest betweenness centrality' + get_timestamp_sting(timestamp) + ':')
     output.normal(nodes.head(10))
     output.normal('\n10 edges with the highest betweenness centrality' + get_timestamp_sting(timestamp) + ':')
@@ -177,6 +178,13 @@ def eigenvector(timestamp=None):
     output.success('Saved eigenvector results to "' + get_timestamp_path(eigenvector_path, timestamp) + '"')
 
 
+# Calculate graph assortativity
+def assortativity(timestamp=None):
+    output.important('\nCalculating graph assortativity' + get_timestamp_sting(timestamp) + '...')
+    assortativity_tuple = graph_assortativity(graph)
+    output.dim('Graph assortativity: ' + str(assortativity_tuple))
+
+
 analysis_options = {
     'everything': everything,
     'nothing': None,
@@ -187,7 +195,8 @@ analysis_options = {
     'degree': degree,
     'betweenness-centrality': betweenness_centrality,
     'mean-shortest-path': mean_shortest_path,
-    'eigenvector': eigenvector
+    'eigenvector': eigenvector,
+    'assortativity': assortativity
 }
 
 while True:
