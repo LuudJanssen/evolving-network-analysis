@@ -1,4 +1,5 @@
 import click
+import igraph
 import data
 import output
 import filter
@@ -12,20 +13,24 @@ from analysis.betweenness_centrality import graph_betweenness_centrality
 from analysis.shortest_path import shortest_paths_mean
 from analysis.eigenvector import graph_eigenvector
 from analysis.assortativity import graph_assortativity
+from analysis.modularity import graph_modularity, graph_partitions
 
 TEST = False
 STATIC_ANALYSIS = True
 TEMPORAL_ANALYSIS = True
 
 results_folder = 'results'
+graphs_folder = 'graphs'
 pagerank_path = results_folder + '/pagerank'
 degree_path = results_folder + '/degree'
 nodes_betweenness_path = results_folder + '/betweenness.nodes'
 edges_betweenness_path = results_folder + '/betweenness.edges'
 eigenvector_path = results_folder + '/eigenvector'
+graph_path = graphs_folder + '/graph'
 
 # Add results folder
 data.make_folder(results_folder)
+data.make_folder(graphs_folder)
 
 # Import the data file
 filename = 'tgraph_real_wikiedithyperlinks.txt'
@@ -50,10 +55,8 @@ output.dim(str(graph.num_edges()) + "  edges")
 output.dim(str(graph.num_vertices()) + "  vertices")
 
 
-# Returns the filename for a CSV file with a given timestamp
-def get_timestamp_path(path, timestamp=None):
-    postfix = '.csv'
-
+# Returns the filename for a file with a given timestamp
+def get_timestamp_path(path, timestamp=None, postfix='.csv'):
     if timestamp is None:
         return path + '.static' + postfix
     else:
@@ -82,6 +85,7 @@ def everything(timestamp=None):
     mean_shortest_path(timestamp)
     eigenvector(timestamp)
     assortativity(timestamp)
+    modularity(timestamp)
 
 
 # Calculate graph density
@@ -185,6 +189,35 @@ def assortativity(timestamp=None):
     output.dim('Graph assortativity: ' + str(assortativity_tuple))
 
 
+# Calculate graph modularity
+def modularity(timestamp=None):
+    output.important('\nCalculating graph modularity' + get_timestamp_sting(timestamp) + '...')
+
+    graph_tool_graph = graph
+
+    if timestamp is not None:
+        output.normal('\nCreating a graph copy and purging filtered edges')
+        graph_tool_graph = graph.copy()
+        graph_tool_graph.purge_edges()
+        graph_tool_graph.purge_vertices()
+        output.normal('Created graph copy and purged filtered edges')
+
+    output.normal('\nSaving graph as file...')
+    filepath = get_timestamp_path(graph_path, timestamp, '.graphml')
+    graph_tool_graph.save(filepath)
+    output.normal('Saved graph to "' + filepath + '"')
+    output.normal('\nLoading saved graph into igraph...')
+    igraph_graph = igraph.Graph.Read_GraphML(filepath)
+    igraph_graph.to_undirected()
+    output.normal('Loaded graph into igraph')
+    output.normal('\nGenerating partitions with igraph using Louvain\'s algorithm...')
+    partitions = graph_partitions(igraph_graph)
+    output.normal('Calculated graph partitions')
+    output.normal('\nCalculating modularity using igraph and calculated partitions...')
+    modularity = graph_modularity(igraph_graph, partitions)
+    output.success('Graph modularity' + get_timestamp_sting(timestamp) + ': ' + str(modularity))
+
+
 analysis_options = {
     'everything': everything,
     'nothing': None,
@@ -196,7 +229,8 @@ analysis_options = {
     'betweenness-centrality': betweenness_centrality,
     'mean-shortest-path': mean_shortest_path,
     'eigenvector': eigenvector,
-    'assortativity': assortativity
+    'assortativity': assortativity,
+    'modularity': modularity
 }
 
 while True:
