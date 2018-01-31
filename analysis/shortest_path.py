@@ -9,7 +9,7 @@ def shortest_paths_mean(graph):
     frequency_dict = {}
 
     # max path length equals the diameter 
-    for i in range(100):
+    for i in range(10000):
         frequency_dict[i] = 0
 
     vertices = graph.get_vertices()
