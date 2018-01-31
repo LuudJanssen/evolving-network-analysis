@@ -14,6 +14,7 @@ from analysis.shortest_path import shortest_paths_mean
 from analysis.eigenvector import graph_eigenvector
 from analysis.assortativity import graph_assortativity
 from analysis.modularity import graph_modularity, graph_partitions
+from analysis.reciprocity import graph_reciprocity
 
 TEST = False
 STATIC_ANALYSIS = True
@@ -86,6 +87,7 @@ def everything(timestamp=None):
     eigenvector(timestamp)
     assortativity(timestamp)
     modularity(timestamp)
+    reciprocity(timestamp)
 
 
 # Calculate graph density
@@ -218,6 +220,12 @@ def modularity(timestamp=None):
     output.success('Graph modularity' + get_timestamp_sting(timestamp) + ': ' + str(modularity))
 
 
+# Calculate graph edge reciprocity
+def reciprocity(timestamp=None):
+    output.important('\nCalculating edge reciprocity' + get_timestamp_sting(timestamp) + '...')
+    output.success('Edge reciprocity' + get_timestamp_sting(timestamp) + ': ' + str(graph_reciprocity(graph)))
+
+
 analysis_options = {
     'everything': everything,
     'nothing': None,
@@ -230,7 +238,8 @@ analysis_options = {
     'mean-shortest-path': mean_shortest_path,
     'eigenvector': eigenvector,
     'assortativity': assortativity,
-    'modularity': modularity
+    'modularity': modularity,
+    'reciprocity': reciprocity
 }
 
 while True:
